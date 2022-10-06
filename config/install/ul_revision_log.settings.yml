@@ -1,4 +1,4 @@
 ul_revision_log:
   name: 'Content Types of UL Revision Log'
-  values: 'homepage event help hub knowledge landing_page location news offering page person resource tool'
+  values: 'page'
   langcode: en
