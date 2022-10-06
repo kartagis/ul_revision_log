@@ -1,0 +1,7 @@
+ul_revision_log.form:
+  path: '/admin/config/content/ul-revision-log'
+  defaults:
+    _form: '\Drupal\ul_revision_log\Form\ULRevisionLogConfigForm'
+    _title: 'UL Revision Log: add/remove content types'
+  requirements:
+    _permission: 'administer site configuration'

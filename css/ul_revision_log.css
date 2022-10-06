@@ -1,0 +1,55 @@
+/* Override the Revision Description */
+#edit-revision--description {
+  visibility: hidden;
+  line-height: 2px
+}
+
+#edit-revision--description:after{
+  content: 'This field is required when publishing or archiving the page.';
+  visibility: visible;
+  display: block;
+  padding: 10px;
+  font-size: 1.15em;
+}
+
+/* Override the Revision Help Text */
+#edit-revision-log-0-value--description {
+  visibility: hidden;
+  line-height: 2px
+}
+#edit-revision-log-0-value--description:after {
+  content: 'Briefly describe the QA review notes, the changes you have made, or the reasons for archival. Include the Marketing Support ticket number related to the request.';
+  visibility: visible;
+  display: block;
+  padding: 10px;
+  line-height: 1.5;
+    font-size: 1.15em;
+}
+
+.gray-btn {
+  background-color: gray !important;
+}
+
+.dropbutton-action .button.gray-btn:hover {
+  background-image: none !important;
+}
+
+#block-content-cta-banner-edit-form [class*="field-hash-target"],
+#block-content-cta-banner-form [class*="field-hash-target"] {
+  display: none;
+}
+
+/* CRC asset selection list warning message in CRCAssetWidget */
+tfoot td.crc-select-warning-1 {
+  background-color: #fbdcdc;
+  text-align: center;
+  font-weight: bold;
+  color: red;
+  font-size: 22px;
+}
+
+.js tfoot td.crc-select-warning-2 {
+  background-color: #fbdcdc;
+  font-weight: bold;
+  line-height: 21px;
+}

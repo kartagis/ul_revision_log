@@ -1,0 +1,5 @@
+ul_revision_log.form:
+  title: 'Ul Revision Log setting'
+  description: 'Configure setting for the Ul Revision Log module to add/remove content types.'
+  route_name: ul_revision_log.form
+  parent: 'system.admin_config_content'

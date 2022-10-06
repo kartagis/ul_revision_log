@@ -1,0 +1,10 @@
+ul-revision-log:
+  version: 1.x
+  js:
+    js/ul_revision_log.js: { minified: true }
+  dependencies:
+    - core/drupal
+    - core/jquery
+  css:
+    theme:
+      css/ul_revision_log.css: { weight: 500 }

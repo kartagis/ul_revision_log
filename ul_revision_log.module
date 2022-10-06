@@ -1,0 +1,97 @@
+<?php
+
+/**
+ * @file
+ * Provides primary Drupal hook implementations form_alter for revision_log.
+ *
+ * Change the position of the revision_log box on the node/edit page.
+ * Force revision_log required for "Save and Publish" and "Save and Archive".
+ * Add the custom library(JS/CSS) to gray out and disable/enable the "Publish"
+ * and "Archive" buttons.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ul_revision_log_form_node_form_alter(&$form, FormStateInterface $form_state) {
+
+  // Move the Revision Log(box) from the righside bar to the buttom of page
+  // (above the Save Button).
+  $form['revision_information']['#parents'][0] = "langcode_wrapper";
+  $form['revision']['#weight'] = 10;
+  $form['revision']['#prefix'] = '<div class="layout-region-node-footer__content"></div>';
+  $form['revision_log']['#weight'] = 12;
+  $types = ul_revision_log_get_types();
+  $node = $form_state->getFormObject()->getEntity();
+
+  // Load custom css/js library and the form validation for configured
+  // content types.
+  if (in_array($node->getType(), $types)) {
+    // Add the form validation.
+    $form['#validate'][] = 'ul_revision_log_form_validate';
+    // Attach the custom library.
+    $form['#attached']['library'][] = 'ul_revision_log/ul-revision-log';
+  }
+}
+
+/**
+ * Form validate callback.
+ *
+ * @param array $form
+ *   The drupal form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form_state object.
+ */
+function ul_revision_log_form_validate(array $form, FormStateInterface &$form_state) {
+  // Fix the fatal error of adding/editing a paragraph, which leads to
+  // the AJAX calling failure.
+  if (!$form_state->getValue(['op']) instanceof TranslatableMarkup) {
+    return TRUE;
+  }
+  // Retrieve object of TranslatableMarkup and render to String.
+  $op = $form_state->getValue(['op'])->render();
+  if (isset($op)) {
+    if (stristr($op, 'Save and Publish') || stristr($op, 'Save and Archive')) {
+      $log = $form_state->getvalue('revision_log');
+      if ($log[0]['value'] == "") {
+        $message = t("Revision Log Message Required!");
+        $form_state->setErrorByName('revision_log', $message);
+      }
+    }
+  }
+
+}
+
+/**
+ * Help function to get config values of enitity types.
+ *
+ * @return array
+ *   The vaules of entity types.
+ */
+function ul_revision_log_get_types() {
+  $types = ["homepage", "event", "help", "hub", "knowledge", "landing_page",
+    "location", "news", "offering", "page", "person", "resource", "tool",
+  ];
+
+  $config = \Drupal::config('ul_revision_log.settings');
+  if (!NULL == $config->get('ul_revision_log.values')) {
+    $types = preg_split('/[\s]+/', $config->get('ul_revision_log.values'));
+  }
+
+  return $types;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Hide the field--name-field-hash-target in Block CTA Banner type.
+ */
+function ul_revision_log_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'block_content_cta_banner_edit_form'
+    || $form_id == 'block_content_cta_banner_form') {
+    $form['#attached']['library'][] = 'ul_revision_log/ul-revision-log';
+  }
+}
