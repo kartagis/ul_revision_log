@@ -4,6 +4,7 @@ namespace Drupal\ul_revision_log\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
@@ -14,9 +15,9 @@ class ULRevisionLogConfigForm extends ConfigFormBase {
   /**
    * The entity field manager.
    *
-   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityFieldManager;
+  // protected $entityTypeManager;
 
   /**
    * Constructs an AutoParagraphForm object.
@@ -24,8 +25,17 @@ class ULRevisionLogConfigForm extends ConfigFormBase {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entityTypeManager.
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
-    $this->entityTypeManager = $entityTypeManager;
+  // public function __construct(EntityTypeManagerInterface $entityTypeManager) {
+  //   $this->entityTypeManager = $entityTypeManager;
+  // }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    $instance = parent::create($container);
+    $instance->entityTypeManager =  $container->get('entity_type.manager');
+    return $instance;
   }
 
   /**
@@ -58,7 +68,7 @@ class ULRevisionLogConfigForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $fields = $form_state->getValue('fields');
+    $fields = $form_state->getValue('content_types');
     if (empty($fields)) {
       return TRUE;
     }
@@ -67,15 +77,15 @@ class ULRevisionLogConfigForm extends ConfigFormBase {
 
     $contentTypes = $this->entityTypeManager->getStorage('node_type')->loadMultiple();
 
-    foreach ($fields_arr as $field_name) {
-      if (!$this->isValideField(trim($field_name), $contentTypes)) {
-        $error[] = $field_name;
+    foreach ($fields_arr as $name) {
+      if (!$this->isValideField(trim($name), $contentTypes)) {
+        $error[] = $name;
       }
     }
 
     if (!empty($error)) {
       $str = "Not valid field(s): " . implode(",", $error) . ".";
-      $form_state->setErrorByName('fields', $str);
+      $form_state->setErrorByName('content_types', $str);
     }
     else {
       return TRUE;
@@ -83,11 +93,10 @@ class ULRevisionLogConfigForm extends ConfigFormBase {
 
   }
 
-
   /**
    * Check if a field is valid.
    *
-   * @param string $field_item
+   * @param string $name
    *   The field name.
    * @param array $contentTypes
    *   The field name.
@@ -95,10 +104,10 @@ class ULRevisionLogConfigForm extends ConfigFormBase {
    * @return bool
    *   TRUE of FALSE.
    */
-  protected function isValideField($field_item, array &$contentTypes) {
+  protected function isValideField($name, array &$contentTypes) {
     foreach ($contentTypes as $contentType) {
-      if ($contentType->id() == $field_item) {
-        $return TRUE;
+      if ($contentType->id() == $name) {
+        return TRUE;
       }
     }
     return FALSE;

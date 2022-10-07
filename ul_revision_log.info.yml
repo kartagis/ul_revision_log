@@ -1,6 +1,6 @@
 name: Revision Log Required
 type: module
-description: 'Alter the revision log to make it rquired for actions of "Save and Archive" and "Save and Publish"'
+description: 'Provide submit buttons and alter the revision log to make it rquired for actions of "Save and Archive" and "Save and Publish"'
 package: Custom
 core: '8.x'
 core_version_requirement: ^8 || ^9

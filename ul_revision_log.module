@@ -4,14 +4,128 @@
  * @file
  * Provides primary Drupal hook implementations form_alter for revision_log.
  *
+ * Provide the dynamic submit button on Editing page.
  * Change the position of the revision_log box on the node/edit page.
  * Force revision_log required for "Save and Publish" and "Save and Archive".
  * Add the custom library(JS/CSS) to gray out and disable/enable the "Publish"
  * and "Archive" buttons.
  */
 
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeForm;
+use Drupal\node\NodeInterface;
+
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\content_moderation\Plugin\Field\ModerationStateFieldItemList;
+
+/**  Secition I  */
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function ul_revision_log_submit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (!($form_state->getFormObject() instanceof NodeForm)) {
+    return;
+  }
+
+  update_submit_actions($form['actions'], $form_state, $form_state->getFormObject()->getEntity());
+
+  $form['#entity_builders']['update_status'] = '\Drupal\cm_submit\Plugin\Field\FieldWidget\CMSubmitButtonsWidget::updateStatus';
+}
+
+/**
+ * Helper function to update submit actions.
+ */
+function update_submit_actions(&$element, FormStateInterface $form_state, NodeInterface $node) {
+  if (FALSE && $element['submit']['#access'] && \Drupal::currentUser()->hasPermission('administer nodes')) {
+    // Add a "Publish" button.
+    $element['publish'] = $element['submit'];
+    // If the "Publish" button is clicked, we want to update the status to "published".
+    $element['publish']['#published_status'] = TRUE;
+    $element['publish']['#dropbutton'] = 'save';
+    if ($node->isNew()) {
+      $element['publish']['#value'] = t('Save and publish');
+    }
+    else {
+      $element['publish']['#value'] = $node->isPublished() ? t('Save and keep published') : t('Save and publish');
+    }
+    $element['publish']['#weight'] = 0;
+
+    // Add a "Unpublish" button.
+    $element['unpublish'] = $element['submit'];
+    // If the "Unpublish" button is clicked, we want to update the status to "unpublished".
+    $element['unpublish']['#published_status'] = FALSE;
+    $element['unpublish']['#value'] = t('Unpublish');
+    $element['unpublish']['#weight'] = 10;
+
+    // If already published, the 'publish' button is primary.
+    if ($node->isPublished()) {
+      unset($element['unpublish']['#button_type']);
+    }
+    // Otherwise, the 'unpublish' button is primary and should come first.
+    else {
+      unset($element['publish']['#button_type']);
+      $element['unpublish']['#weight'] = -10;
+    }
+
+    // Remove the "Save" button.
+    $element['submit']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function ul_revision_log_submit_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  if (isset($fields['moderation_state']) && $fields['moderation_state']->getClass() === ModerationStateFieldItemList::class) {
+    $fields['moderation_state']->setDisplayOptions('form', [
+      'type' => 'cm_submit_buttons',
+      'weight' => 5,
+      'settings' => [],
+    ]);
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function ul_revision_log_submit_preprocess_node(&$variables) {
+  $variables['latest_revision_state'] = '';
+  $variables['current_revision_state'] = '';
+
+  $node = $variables['node'];
+
+  $variables['current_revision_state'] = _safe_get_moderation_state($node);
+
+  if ($node->isDefaultRevision() && !$node->isLatestRevision()) {
+    $current_revision_id = $node->getRevisionId();
+
+    // Get all of the revision ids.
+    $revision_ids = \Drupal::entityTypeManager()->getStorage('node')->revisionIds($variables['node']);
+
+    // Check if the last item in the revisions is the loaded one.
+    $last_revision_id = end($revision_ids);
+
+    if ($current_revision_id != $last_revision_id) {
+      // Load the latest revision, so we can reference it's state.
+      $last_revision = \Drupal::entityTypeManager()->getStorage('node')->loadRevision($last_revision_id);
+      // Get the revision's moderation state.
+      $variables['latest_revision_state'] = _safe_get_moderation_state($last_revision);
+    }
+  }
+}
+
+/**
+ * Another helper function.
+ */
+function _safe_get_moderation_state($node) {
+  if ($node->hasField('moderation_state')) {
+    return $node->get('moderation_state')->getString();
+  }
+}
+
+/**  Secition II  */
 
 /**
  * Implements hook_form_FORM_ID_alter().
