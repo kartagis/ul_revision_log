@@ -5,29 +5,11 @@ namespace Drupal\ul_revision_log\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * ULRevisionLogConfigForm class for the setting of content types.
  */
 class ULRevisionLogConfigForm extends ConfigFormBase {
-
-  /**
-   * The entity field manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  // protected $entityTypeManager;
-
-  /**
-   * Constructs an AutoParagraphForm object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The entityTypeManager.
-   */
-  // public function __construct(EntityTypeManagerInterface $entityTypeManager) {
-  //   $this->entityTypeManager = $entityTypeManager;
-  // }
 
   /**
    * {@inheritdoc}
@@ -62,7 +44,6 @@ class ULRevisionLogConfigForm extends ConfigFormBase {
 
     return parent::buildForm($form, $form_state);
   }
-
 
   /**
    * {@inheritdoc}

@@ -3,12 +3,14 @@ Revision Log Required
 
 Custom module for Editing Node:
 - Change the position of the revision_log box close to "Save" button.
-- Force revision_log message required for actions of "Save and Publish" and "Save and Archive".
+- Force revision_log message required for actions of "Save and Publish"
+and "Save and Archive".
 - Set content types which are applied.
 
 Instructions
 ------------
-1. 'Alter the revision log to make it rquired for actions of "Save and Archive" and "Save and Publish"'
+1. 'Alter the revision log to make it rquired for actions of
+"Save and Archive" and "Save and Publish"'
 - Configuation Page: '/admin/config/content/ul-revision-log'
 
 2. Hide the hashtag field in block cta_banner edit form
