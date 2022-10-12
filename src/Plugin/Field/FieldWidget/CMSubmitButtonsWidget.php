@@ -121,7 +121,9 @@ class CMSubmitButtonsWidget extends OptionsSelectWidget implements ContainerFact
     $entity = $items->getEntity();
 
     $workflow = $this->moderationInformation->getWorkflowForEntity($entity);
-    $default = $items->get($delta)->value ? $workflow->getTypePlugin()->getState($items->get($delta)->value) : $workflow->getTypePlugin()->getInitialState($entity);
+    $default = $items->get($delta)->value
+      ? $workflow->getTypePlugin()->getState($items->get($delta)->value)
+      : $workflow->getTypePlugin()->getInitialState($entity);
 
     /** @var \Drupal\workflows\Transition[] $transitions */
     $transitions = $this->validator->getValidTransitions($entity, $this->currentUser);
