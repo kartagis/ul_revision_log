@@ -1,0 +1,15 @@
+{
+    "name": "kartagis/ul_revision_log",
+    "description": "Alter the revision log to make it required for actions of 'Save and Archive' and 'Save and Publish'",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "minimum-stability": "dev",
+    "homepage": "https://drupal.org/project/ul_revision_log",
+    "authors": [
+        {
+            "name": "Tolga Ozses (kartagis)",
+            "homepage": "https://www.drupal.org/u/kartagis",
+            "role": "Maintainer"
+        }
+    ]
+}
