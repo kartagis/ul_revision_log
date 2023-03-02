@@ -3,7 +3,7 @@ type: module
 description: 'Provide submit buttons and alter the revision log to make it rquired for actions of "Save and Archive" and "Save and Publish"'
 package: Custom
 core: '8.x'
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^8 || ^9 || ^10
 dependencies:
-  - content_moderation:content_moderation
-  - workflows:workflows
+  - drupal:content_moderation
+  - drupal:workflows
